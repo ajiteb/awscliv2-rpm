@@ -5,9 +5,9 @@ set -euo pipefail
 name=awscliv2
 version=$(cat aws-cli.version)
 release=1
-distro=el8
+distro=el9
 arch=x86_64
-vrsn=$(tr -dc '[:digit:]' < aws-cli.version)
+vrsn=$(tr -dc '[:digit:]' <aws-cli.version)
 changelog_url="https://github.com/aws/aws-cli/blob/v2/CHANGELOG.rst#${vrsn}"
 
 # escaping variables in templates
@@ -16,7 +16,10 @@ CODEBEGIN='`'
 CODEEND='`'
 
 # print the file name so it can be fed to "git add"
-respec () { cat > "$1" ; echo "$1" ; }
+respec() {
+  cat >"$1"
+  echo "$1"
+}
 
 respec ${name}-rpm-details.txt <<EOF
 aws-cli version: ${version}

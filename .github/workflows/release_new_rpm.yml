@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       force:
-        description: 'Rebuild rpm even if installer has not changed'
+        description: "Rebuild rpm even if installer has not changed"
         required: true
         default: false
         type: boolean
@@ -40,6 +40,8 @@ jobs:
           echo "AWS_CLI_VERSION=$(cat aws-cli.version)" >> $GITHUB_ENV
           echo "AWSCLIV2_RPM_RELEASE=$(cat awscliv2-rpm.release)" >> $GITHUB_ENV
           echo "AWSCLIV2_RPM_DISTRO=$(cat awscliv2-rpm.distro)" >> $GITHUB_ENV
+          chmod +x rebuildit
+          chmod +x retestit
 
       - name: Check for changes to commit
         id: check_for_changes
