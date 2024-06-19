@@ -5,15 +5,15 @@ set -euo pipefail
 name=awscliv2
 version=$(cat aws-cli.version)
 release=1
-distro=el9
+distro=$1
 arch=x86_64
 vrsn=$(tr -dc '[:digit:]' <aws-cli.version)
 changelog_url="https://github.com/aws/aws-cli/blob/v2/CHANGELOG.rst#${vrsn}"
 
 # escaping variables in templates
 HOME='$HOME'
-CODEBEGIN='`'
-CODEEND='`'
+# CODEBEGIN='`'
+# CODEEND='`'
 
 # print the file name so it can be fed to "git add"
 respec() {
@@ -47,9 +47,6 @@ Release: ${release}%{?dist}
 Source0: https://awscli.amazonaws.com/awscli-exe-linux-%{_arch}.zip
 Source1: awscli-exe-linux-%{_arch}.zip.sha256
 NoSource: 0
-
-# skip debuginfo
-%define debug_package %{nil}
 
 %description
 The AWS Command Line Interface (AWS CLI) is an open

@@ -1,6 +1,0 @@
-#!/bin/bash
-set -euo pipefail
-
-rpm --test -ivh ./RPMS/x86_64/awscliv2-2.16.8-1.el9.x86_64.rpm
-rpm -ivh ./RPMS/x86_64/awscliv2-2.16.8-1.el9.x86_64.rpm
-aws --version

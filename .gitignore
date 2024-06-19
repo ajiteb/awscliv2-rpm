@@ -2,3 +2,5 @@
 /RPMS/
 /SRPMS/
 awscli-exe-linux-x86_64.zip
+.DS_Store
+awscli-exe-linux-x86_64.zip.sha256

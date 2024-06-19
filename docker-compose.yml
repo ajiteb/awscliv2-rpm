@@ -14,7 +14,7 @@ services:
       - .:/work
     working_dir: /work
   tester:
-    image: rockylinux:9
+    image: ${base_image}
     volumes:
       - .:/work
     working_dir: /work

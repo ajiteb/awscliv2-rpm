@@ -1,7 +1,7 @@
 ARG build_as_root=no
+ARG base_image="rockylinux:8"
 
-
-FROM rockylinux:9 AS base
+FROM ${base_image} AS base
 RUN dnf -y install \
     rpmdevtools \
     rpmlint
