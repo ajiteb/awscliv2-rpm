@@ -45,8 +45,10 @@ URL: https://docs.aws.amazon.com/cli/
 Version: ${version}
 Release: ${release}%{?dist}
 Source0: https://awscli.amazonaws.com/awscli-exe-linux-%{_arch}.zip
-Source1: awscli-exe-linux-%{_arch}.zip.sha256
 NoSource: 0
+
+# skip debuginfo
+%define debug_package %{nil}
 
 %description
 The AWS Command Line Interface (AWS CLI) is an open
