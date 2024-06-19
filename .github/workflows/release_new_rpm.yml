@@ -70,17 +70,17 @@ jobs:
         id: build_el8_rpm
         run: |
           docker-compose run superbuilder ./rebuildit
-          srpm_path=$(find SRPMS -type f -name '*.rpm' | head -n1)
-          srpm_name=$(basename "$srpm_path")
-          rpm_path=$(find RPMS -type f -name '*.rpm' | head -n1)
-          rpm_name=$(basename "$rpm_path")
+          el8_srpm_path=$(find SRPMS -type f -name '*.rpm' | head -n1)
+          el8_srpm_name=$(basename "$srpm_path")
+          el8_rpm_path=$(find RPMS -type f -name '*.rpm' | head -n1)
+          el8_rpm_name=$(basename "$rpm_path")
           echo ======================================
           declare -p {s,}rpm_{path,name}
           echo ======================================
-          echo "srpm_path=$srpm_path" >> $GITHUB_OUTPUT
-          echo "srpm_name=$srpm_name" >> $GITHUB_OUTPUT
-          echo "rpm_path=$rpm_path" >> $GITHUB_OUTPUT
-          echo "rpm_name=$rpm_name" >> $GITHUB_OUTPUT
+          echo "el8_srpm_path=$el8_srpm_path" >> $GITHUB_OUTPUT
+          echo "el8_srpm_name=$el8_srpm_name" >> $GITHUB_OUTPUT
+          echo "el8_rpm_path=$el8_rpm_path" >> $GITHUB_OUTPUT
+          echo "el8_rpm_name=$el8_rpm_name" >> $GITHUB_OUTPUT
 
       - name: Test el8 RPM
         if: ${{ 'skipped' != steps.build_el8_rpm.conclusion }}
@@ -107,17 +107,17 @@ jobs:
         id: build_el9_rpm
         run: |
           docker-compose run superbuilder ./rebuildit
-          srpm_path=$(find SRPMS -type f -name '*.rpm' | head -n1)
-          srpm_name=$(basename "$srpm_path")
-          rpm_path=$(find RPMS -type f -name '*.rpm' | head -n1)
-          rpm_name=$(basename "$rpm_path")
+          el9_srpm_path=$(find SRPMS -type f -name '*.rpm' | head -n1)
+          el9_srpm_name=$(basename "$srpm_path")
+          el9_rpm_path=$(find RPMS -type f -name '*.rpm' | head -n1)
+          el9_rpm_name=$(basename "$rpm_path")
           echo ======================================
           declare -p {s,}rpm_{path,name}
           echo ======================================
-          echo "srpm_path=$srpm_path" >> $GITHUB_OUTPUT
-          echo "srpm_name=$srpm_name" >> $GITHUB_OUTPUT
-          echo "rpm_path=$rpm_path" >> $GITHUB_OUTPUT
-          echo "rpm_name=$rpm_name" >> $GITHUB_OUTPUT
+          echo "el9_srpm_path=$el9_srpm_path" >> $GITHUB_OUTPUT
+          echo "el9_srpm_name=$el9_srpm_name" >> $GITHUB_OUTPUT
+          echo "el9_rpm_path=$el9_rpm_path" >> $GITHUB_OUTPUT
+          echo "el9_rpm_name=$el9_rpm_name" >> $GITHUB_OUTPUT
 
       - name: Test el9 RPM
         if: ${{ 'skipped' != steps.build_el9_rpm.conclusion }}
@@ -154,8 +154,8 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ steps.build_el8_rpm.outputs.srpm_path }}
-          asset_name: ${{ steps.build_el8_rpm.outputs.srpm_name }}
+          asset_path: ${{ steps.build_el8_rpm.outputs.el8_srpm_path }}
+          asset_name: ${{ steps.build_el8_rpm.outputs.el8_srpm_name }}
           asset_content_type: application/x-rpm
 
       - name: Upload el8 RPM to release
@@ -165,8 +165,8 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ steps.build_el8_rpm.outputs.rpm_path }}
-          asset_name: ${{ steps.build_el8_rpm.outputs.rpm_name }}
+          asset_path: ${{ steps.build_el8_rpm.outputs.el8_rpm_path }}
+          asset_name: ${{ steps.build_el8_rpm.outputs.el8_rpm_name }}
           asset_content_type: application/x-rpm
 
       - name: Upload el9 SRPM to release
@@ -176,8 +176,8 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ steps.build_el9_rpm.outputs.srpm_path }}
-          asset_name: ${{ steps.build_el9_rpm.outputs.srpm_name }}
+          asset_path: ${{ steps.build_el9_rpm.outputs.el9_srpm_path }}
+          asset_name: ${{ steps.build_el9_rpm.outputs.el9_srpm_name }}
           asset_content_type: application/x-rpm
 
       - name: Upload el9 RPM to release
@@ -187,6 +187,6 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ steps.build_el9_rpm.outputs.rpm_path }}
-          asset_name: ${{ steps.build_el9_rpm.outputs.rpm_name }}
+          asset_path: ${{ steps.build_el9_rpm.outputs.el9_rpm_path }}
+          asset_name: ${{ steps.build_el9_rpm.outputs.el9_rpm_name }}
           asset_content_type: application/x-rpm
