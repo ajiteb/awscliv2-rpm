@@ -32,7 +32,8 @@ jobs:
       - name: Check for new installer
         run: |
           git rm -q -f --ignore-unmatch -- *.version
-          ./check_for_new_installer | xargs --no-run-if-empty git add *.version
+          ./check_for_new_installer
+          git add *.version
 
       - name: Rebuild el8 spec file, etc.
         run: |
