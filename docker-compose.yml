@@ -4,7 +4,7 @@ services:
     build:
       context: ./builder
       args:
-        base_image: ${base_image}
+        base_image: ${BASE_IMAGE}
     volumes:
       - .:/work
     working_dir: /work
@@ -13,12 +13,12 @@ services:
       context: ./builder
       args:
         build_as_root: "yes"
-        base_image: ${base_image}
+        base_image: ${BASE_IMAGE}
     volumes:
       - .:/work
     working_dir: /work
   tester:
-    image: ${base_image}
+    image: ${BASE_IMAGE}
     volumes:
       - .:/work
     working_dir: /work
