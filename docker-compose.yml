@@ -1,7 +1,10 @@
 version: "3"
 services:
   builder:
-    build: ./builder
+    build:
+      context: ./builder
+      args:
+        base_image: ${base_image}
     volumes:
       - .:/work
     working_dir: /work
@@ -10,6 +13,7 @@ services:
       context: ./builder
       args:
         build_as_root: "yes"
+        base_image: ${base_image}
     volumes:
       - .:/work
     working_dir: /work
