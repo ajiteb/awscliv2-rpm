@@ -32,11 +32,11 @@ jobs:
       - name: Check for new installer
         run: |
           git rm -q -f --ignore-unmatch -- *.version
-          ./check_for_new_installer | xargs --no-run-if-empty git add
+          ./check_for_new_installer | xargs --no-run-if-empty git add *.version
 
       - name: Rebuild el8 spec file, etc.
         run: |
-          ./respecit el8 | xargs --no-run-if-empty git add
+          ./respecit el8 # | xargs --no-run-if-empty git add
           echo "AWS_CLI_VERSION=$(cat aws-cli.version)" >> $GITHUB_ENV
           echo "AWSCLIV2_RPM_RELEASE=$(cat awscliv2-rpm.release)" >> $GITHUB_ENV
           echo "AWSCLIV2_RPM_DISTRO=$(cat awscliv2-rpm.distro)" >> $GITHUB_ENV
@@ -44,23 +44,23 @@ jobs:
           chmod +x rebuildit
           chmod +x retestit
 
-      # - name: Check for changes to commit
-      #   id: check_for_changes
-      #   run: |
-      #     if ! git diff --cached --name-status --exit-code
-      #     then
-      #       echo "installer_has_changed=yes" >> $GITHUB_OUTPUT
-      #     fi
+      - name: Check for changes to commit
+        id: check_for_changes
+        run: |
+          if ! git diff --cached --name-status --exit-code
+          then
+            echo "installer_has_changed=yes" >> $GITHUB_OUTPUT
+          fi
 
-      # - name: Push updated installer details
-      #   if: ${{ 'yes' == steps.check_for_changes.outputs.installer_has_changed }}
-      #   id: commit_changes
-      #   run: |
-      #     git commit --file awscliv2-rpm-details.txt
-      #     git push
+      - name: Push updated installer details
+        if: ${{ 'yes' == steps.check_for_changes.outputs.installer_has_changed }}
+        id: commit_changes
+        run: |
+          git commit --file awscliv2-rpm-details.txt
+          git push
 
       - name: Build el8 builder image
-        if: ${{ github.event.inputs.force }} # || 'skipped' != steps.commit_changes.conclusion }}
+        if: ${{ github.event.inputs.force || 'skipped' != steps.commit_changes.conclusion }}
         id: build_el8_image
         run: docker-compose build superbuilder
 
@@ -97,7 +97,7 @@ jobs:
           chmod +x retestit
 
       - name: Build el9 builder image
-        if: ${{ github.event.inputs.force }} # || 'skipped' != steps.commit_changes.conclusion }}
+        if: ${{ github.event.inputs.force || 'skipped' != steps.commit_changes.conclusion }}
         id: build_el9_image
         run: docker-compose build superbuilder
 
