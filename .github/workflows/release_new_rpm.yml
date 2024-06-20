@@ -71,9 +71,9 @@ jobs:
         run: |
           docker-compose run superbuilder ./rebuildit
           el8_srpm_path=$(find SRPMS -type f -name '*.rpm' | head -n1)
-          el8_srpm_name=$(basename "$srpm_path")
+          el8_srpm_name=$(basename "$el8_srpm_path")
           el8_rpm_path=$(find RPMS -type f -name '*.rpm' | head -n1)
-          el8_rpm_name=$(basename "$rpm_path")
+          el8_rpm_name=$(basename "$el8_rpm_path")
           # echo ======================================
           # declare -p el8_{s,}rpm_{path,name}
           # echo ======================================
@@ -108,9 +108,9 @@ jobs:
         run: |
           docker-compose run superbuilder ./rebuildit
           el9_srpm_path=$(find SRPMS -type f -name '*.rpm' | head -n1)
-          el9_srpm_name=$(basename "$srpm_path")
+          el9_srpm_name=$(basename "$el9_srpm_path")
           el9_rpm_path=$(find RPMS -type f -name '*.rpm' | head -n1)
-          el9_rpm_name=$(basename "$rpm_path")
+          el9_rpm_name=$(basename "$el9_rpm_path")
           # echo ======================================
           # declare -p el9_{s,}rpm_{path,name}
           # echo ======================================
