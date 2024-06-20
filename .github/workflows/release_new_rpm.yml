@@ -88,7 +88,7 @@ jobs:
         run: docker-compose run tester ./retestit
 
       - name: Tag for release
-        if: ${{ 'skipped' != steps.test_el9_rpm.conclusion }}
+        if: ${{ 'skipped' != steps.test_el8_rpm.conclusion }}
         id: tag_for_release
         run: |
           tag=v${AWS_CLI_VERSION} # -${AWSCLIV3_RPM_RELEASE}.${AWSCLIV2_RPM_DISTRO}
