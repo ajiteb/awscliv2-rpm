@@ -134,7 +134,7 @@ jobs:
 
       - name: Rebuild el9 spec file, etc.
         run: |
-          rm -rf SRPMS RPMS
+          sudo rm -rf SRPMS RPMS
           ./respecit el9 # | xargs --no-run-if-empty git add
           echo "AWS_CLI_VERSION=$(cat aws-cli.version)" >> $GITHUB_ENV
           echo "AWSCLIV2_RPM_RELEASE=$(cat awscliv2-rpm.release)" >> $GITHUB_ENV
