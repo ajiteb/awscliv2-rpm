@@ -75,7 +75,7 @@ jobs:
           rpm_path=$(find RPMS -type f -name '*.rpm' | head -n1)
           rpm_name=$(basename "$rpm_path")
           echo ======================================
-          declare -p {s,}rpm_{path,name}
+          declare -p el8_{s,}rpm_{path,name}
           echo ======================================
           echo "el8_srpm_path=$srpm_path" >> $GITHUB_OUTPUT
           echo "el8_srpm_name=$srpm_name" >> $GITHUB_OUTPUT
@@ -112,7 +112,7 @@ jobs:
           rpm_path=$(find RPMS -type f -name '*.rpm' | head -n1)
           rpm_name=$(basename "$rpm_path")
           echo ======================================
-          declare -p {s,}rpm_{path,name}
+          declare -p el9_{s,}rpm_{path,name}
           echo ======================================
           echo "el9_srpm_path=$srpm_path" >> $GITHUB_OUTPUT
           echo "el9_srpm_name=$srpm_name" >> $GITHUB_OUTPUT
