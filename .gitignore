@@ -2,3 +2,11 @@
 /RPMS/
 /SRPMS/
 awscli-exe-linux-x86_64.zip
+awscli-exe-linux-x86_64.zip.sha256
+awscliv2-rpm-details.txt
+awscliv2-rpm.distro
+awscliv2-rpm.release
+awscliv2.spec
+rebuildit
+retestit
+.DS_Store

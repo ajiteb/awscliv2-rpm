@@ -1,7 +1,10 @@
 version: "3"
 services:
   builder:
-    build: ./builder
+    build:
+      context: ./builder
+      args:
+        base_image: ${BASE_IMAGE}
     volumes:
       - .:/work
     working_dir: /work
@@ -10,11 +13,12 @@ services:
       context: ./builder
       args:
         build_as_root: "yes"
+        base_image: ${BASE_IMAGE}
     volumes:
       - .:/work
     working_dir: /work
   tester:
-    image: rockylinux:8
+    image: ${BASE_IMAGE}
     volumes:
       - .:/work
     working_dir: /work

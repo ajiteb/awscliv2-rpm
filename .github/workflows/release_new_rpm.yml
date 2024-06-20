@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       force:
-        description: 'Rebuild rpm even if installer has not changed'
+        description: "Rebuild rpm even if installer has not changed"
         required: true
         default: false
         type: boolean
@@ -32,14 +32,18 @@ jobs:
       - name: Check for new installer
         run: |
           git rm -q -f --ignore-unmatch -- *.version
-          ./check_for_new_installer | xargs --no-run-if-empty git add
+          ./check_for_new_installer
+          git add *.version
 
-      - name: Rebuild spec file, etc.
+      - name: Rebuild el8 spec file, etc.
         run: |
-          ./respecit | xargs --no-run-if-empty git add
+          ./respecit el8 # | xargs --no-run-if-empty git add
           echo "AWS_CLI_VERSION=$(cat aws-cli.version)" >> $GITHUB_ENV
           echo "AWSCLIV2_RPM_RELEASE=$(cat awscliv2-rpm.release)" >> $GITHUB_ENV
           echo "AWSCLIV2_RPM_DISTRO=$(cat awscliv2-rpm.distro)" >> $GITHUB_ENV
+          echo "BASE_IMAGE"="rockylinux:8" >> $GITHUB_ENV
+          chmod +x rebuildit
+          chmod +x retestit
 
       - name: Check for changes to commit
         id: check_for_changes
@@ -56,46 +60,38 @@ jobs:
           git commit --file awscliv2-rpm-details.txt
           git push
 
-      - name: Build builder image
+      - name: Build el8 builder image
         if: ${{ github.event.inputs.force || 'skipped' != steps.commit_changes.conclusion }}
-        id: build_image
+        id: build_el8_image
         run: docker-compose build superbuilder
 
-      - name: Build RPM
-        if: ${{ 'skipped' != steps.build_image.conclusion }}
-        id: build_rpm
+      - name: Build el8 RPM
+        if: ${{ 'skipped' != steps.build_el8_image.conclusion }}
+        id: build_el8_rpm
         run: |
           docker-compose run superbuilder ./rebuildit
-          srpm_path=$(find SRPMS -type f -name '*.rpm' | head -n1)
-          srpm_name=$(basename "$srpm_path")
-          rpm_path=$(find RPMS -type f -name '*.rpm' | head -n1)
-          rpm_name=$(basename "$rpm_path")
-          echo ======================================
-          declare -p {s,}rpm_{path,name}
-          echo ======================================
-          echo "srpm_path=$srpm_path" >> $GITHUB_OUTPUT
-          echo "srpm_name=$srpm_name" >> $GITHUB_OUTPUT
-          echo "rpm_path=$rpm_path" >> $GITHUB_OUTPUT
-          echo "rpm_name=$rpm_name" >> $GITHUB_OUTPUT
+          el8_srpm_path=$(find SRPMS -type f -name '*.rpm' | head -n1)
+          el8_srpm_name=$(basename "$el8_srpm_path")
+          el8_rpm_path=$(find RPMS -type f -name '*.rpm' | head -n1)
+          el8_rpm_name=$(basename "$el8_rpm_path")
+          # echo ======================================
+          # declare -p el8_{s,}rpm_{path,name}
+          # echo ======================================
+          echo "el8_srpm_path=$el8_srpm_path" >> $GITHUB_OUTPUT
+          echo "el8_srpm_name=$el8_srpm_name" >> $GITHUB_OUTPUT
+          echo "el8_rpm_path=$el8_rpm_path" >> $GITHUB_OUTPUT
+          echo "el8_rpm_name=$el8_rpm_name" >> $GITHUB_OUTPUT
 
-      - name: Test RPM
-        if: ${{ 'skipped' != steps.build_rpm.conclusion }}
-        id: test_rpm
+      - name: Test el8 RPM
+        if: ${{ 'skipped' != steps.build_el8_rpm.conclusion }}
+        id: test_el8_rpm
         run: docker-compose run tester ./retestit
 
-      - name: Save bad RPMs
-        if: ${{ 'failure' == steps.test_rpm.conclusion }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: rpms
-          path: "*RPMS**/*.rpm"
-          if-no-files-found: error
-
       - name: Tag for release
-        if: ${{ 'skipped' != steps.test_rpm.conclusion }}
+        if: ${{ 'skipped' != steps.test_el8_rpm.conclusion }}
         id: tag_for_release
         run: |
-          tag=v${AWS_CLI_VERSION}-${AWSCLIV2_RPM_RELEASE}.${AWSCLIV2_RPM_DISTRO}
+          tag=v${AWS_CLI_VERSION} # -${AWSCLIV3_RPM_RELEASE}.${AWSCLIV2_RPM_DISTRO}
           echo "tag=$tag" >> $GITHUB_OUTPUT
           git fetch -v --all --prune --prune-tags
           git checkout "$BASE_REF"
@@ -114,26 +110,84 @@ jobs:
           release_name: Release ${{ steps.tag_for_release.outputs.tag }}
           body_path: awscliv2-rpm-details.txt
 
-      - name: Upload SRPM to release
+      - name: Upload el8 SRPM to release
         if: ${{ 'skipped' != steps.create_release.conclusion }}
-        id: upload-srpm-to-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ steps.build_rpm.outputs.srpm_path }}
-          asset_name: ${{ steps.build_rpm.outputs.srpm_name }}
+          asset_path: ${{ steps.build_el8_rpm.outputs.el8_srpm_path }}
+          asset_name: ${{ steps.build_el8_rpm.outputs.el8_srpm_name }}
           asset_content_type: application/x-rpm
 
-      - name: Upload RPM to release
+      - name: Upload el8 RPM to release
         if: ${{ 'skipped' != steps.create_release.conclusion }}
-        id: upload-rpm-to-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ steps.build_rpm.outputs.rpm_path }}
-          asset_name: ${{ steps.build_rpm.outputs.rpm_name }}
+          asset_path: ${{ steps.build_el8_rpm.outputs.el8_rpm_path }}
+          asset_name: ${{ steps.build_el8_rpm.outputs.el8_rpm_name }}
+          asset_content_type: application/x-rpm
+
+      - name: Rebuild el9 spec file, etc.
+        run: |
+          sudo rm -rf SRPMS RPMS
+          ./respecit el9 # | xargs --no-run-if-empty git add
+          echo "AWS_CLI_VERSION=$(cat aws-cli.version)" >> $GITHUB_ENV
+          echo "AWSCLIV2_RPM_RELEASE=$(cat awscliv2-rpm.release)" >> $GITHUB_ENV
+          echo "AWSCLIV2_RPM_DISTRO=$(cat awscliv2-rpm.distro)" >> $GITHUB_ENV
+          echo "BASE_IMAGE"="rockylinux:9" >> $GITHUB_ENV
+          chmod +x rebuildit
+          chmod +x retestit
+
+      - name: Build el9 builder image
+        if: ${{ github.event.inputs.force || 'skipped' != steps.commit_changes.conclusion }}
+        id: build_el9_image
+        run: docker-compose build superbuilder
+
+      - name: Build el9 RPM
+        if: ${{ 'skipped' != steps.build_el9_image.conclusion }}
+        id: build_el9_rpm
+        run: |
+          docker-compose run superbuilder ./rebuildit
+          el9_srpm_path=$(find SRPMS -type f -name '*.rpm' | head -n1)
+          el9_srpm_name=$(basename "$el9_srpm_path")
+          el9_rpm_path=$(find RPMS -type f -name '*.rpm' | head -n1)
+          el9_rpm_name=$(basename "$el9_rpm_path")
+          # echo ======================================
+          # declare -p el9_{s,}rpm_{path,name}
+          # echo ======================================
+          echo "el9_srpm_path=$el9_srpm_path" >> $GITHUB_OUTPUT
+          echo "el9_srpm_name=$el9_srpm_name" >> $GITHUB_OUTPUT
+          echo "el9_rpm_path=$el9_rpm_path" >> $GITHUB_OUTPUT
+          echo "el9_rpm_name=$el9_rpm_name" >> $GITHUB_OUTPUT
+
+      - name: Test el9 RPM
+        if: ${{ 'skipped' != steps.build_el9_rpm.conclusion }}
+        id: test_el9_rpm
+        run: docker-compose run tester ./retestit
+
+      - name: Upload el9 SRPM to release
+        if: ${{ 'skipped' != steps.create_release.conclusion }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ steps.build_el9_rpm.outputs.el9_srpm_path }}
+          asset_name: ${{ steps.build_el9_rpm.outputs.el9_srpm_name }}
+          asset_content_type: application/x-rpm
+
+      - name: Upload el9 RPM to release
+        if: ${{ 'skipped' != steps.create_release.conclusion }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ steps.build_el9_rpm.outputs.el9_rpm_path }}
+          asset_name: ${{ steps.build_el9_rpm.outputs.el9_rpm_name }}
           asset_content_type: application/x-rpm
