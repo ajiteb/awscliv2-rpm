@@ -63,13 +63,13 @@ jobs:
       - name: Build el8 builder image
         if: ${{ github.event.inputs.force || 'skipped' != steps.commit_changes.conclusion }}
         id: build_el8_image
-        run: docker-compose build superbuilder
+        run: docker compose build superbuilder
 
       - name: Build el8 RPM
         if: ${{ 'skipped' != steps.build_el8_image.conclusion }}
         id: build_el8_rpm
         run: |
-          docker-compose run superbuilder ./rebuildit
+          docker compose run superbuilder ./rebuildit
           el8_srpm_path=$(find SRPMS -type f -name '*.rpm' | head -n1)
           el8_srpm_name=$(basename "$el8_srpm_path")
           el8_rpm_path=$(find RPMS -type f -name '*.rpm' | head -n1)
@@ -85,7 +85,7 @@ jobs:
       - name: Test el8 RPM
         if: ${{ 'skipped' != steps.build_el8_rpm.conclusion }}
         id: test_el8_rpm
-        run: docker-compose run tester ./retestit
+        run: docker compose run tester ./retestit
 
       - name: Tag for release
         if: ${{ 'skipped' != steps.test_el8_rpm.conclusion }}
@@ -146,13 +146,13 @@ jobs:
       - name: Build el9 builder image
         if: ${{ github.event.inputs.force || 'skipped' != steps.commit_changes.conclusion }}
         id: build_el9_image
-        run: docker-compose build superbuilder
+        run: docker compose build superbuilder
 
       - name: Build el9 RPM
         if: ${{ 'skipped' != steps.build_el9_image.conclusion }}
         id: build_el9_rpm
         run: |
-          docker-compose run superbuilder ./rebuildit
+          docker compose run superbuilder ./rebuildit
           el9_srpm_path=$(find SRPMS -type f -name '*.rpm' | head -n1)
           el9_srpm_name=$(basename "$el9_srpm_path")
           el9_rpm_path=$(find RPMS -type f -name '*.rpm' | head -n1)
@@ -168,7 +168,7 @@ jobs:
       - name: Test el9 RPM
         if: ${{ 'skipped' != steps.build_el9_rpm.conclusion }}
         id: test_el9_rpm
-        run: docker-compose run tester ./retestit
+        run: docker compose run tester ./retestit
 
       - name: Upload el9 SRPM to release
         if: ${{ 'skipped' != steps.create_release.conclusion }}
