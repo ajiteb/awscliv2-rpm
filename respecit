@@ -45,6 +45,8 @@ Release: ${release}%{?dist}
 Source0: https://awscli.amazonaws.com/awscli-exe-linux-%{_arch}.zip
 Source1: awscli-exe-linux-%{_arch}.zip.sha256
 NoSource: 0
+Conflicts: awscli < 2.0
+BuildRequires: patchelf
 
 # skip debuginfo
 %define debug_package %{nil}
@@ -60,6 +62,8 @@ sha256sum -c "%{S:1}"
 %setup -q -n aws
 
 %build
+rpath_check=$(patchelf --print-rpath dist/libsqlite3.so)
+(test -n "$rpath_check" && patchelf --remove-rpath dist/libsqlite3.so) || true
 
 %install
 sh -x ./install --install-dir %{buildroot}/usr/libexec/${name} --bin-dir %{buildroot}/usr/bin
