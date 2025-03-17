@@ -50,6 +50,8 @@ BuildRequires: patchelf
 
 # skip debuginfo
 %define debug_package %{nil}
+%global __provides_exclude                     ^libpython
+%global __provides_exclude %__requires_exclude ^libsqlite
 
 %description
 The AWS Command Line Interface (AWS CLI) is an open
