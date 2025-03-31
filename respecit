@@ -40,7 +40,7 @@ set -euo pipefail
 
 sha256sum -c awscli-exe-linux-${arch}.zip.sha256
 
-rm -rf "$EXTRACT_DIR" "$PKG_ROOT"
+rm -rf "$PKG_ROOT"
 rm -f "$AWS_CLI_ZIP"
 
 mkdir -p "$PKG_ROOT$FINAL_BIN_DIR"
@@ -55,11 +55,9 @@ ln -s "$FINAL_INSTALL_DIR/v2/current/bin/aws" "$PKG_ROOT$FINAL_BIN_DIR/aws"
 rm -f "$PKG_ROOT$FINAL_BIN_DIR/aws_completer"
 ln -s "$FINAL_INSTALL_DIR/v2/current/bin/aws_completer" "$PKG_ROOT$FINAL_BIN_DIR/aws_completer"
 
-if [ -L "$AWS_V2_DIR/current" ]; then
-    echo "Fixing /usr/aws-cli/v2/current symlink..."
-    rm -rf "$AWS_V2_DIR/current"
-    (cd "$AWS_V2_DIR" && ln -s "$AWS_CLI_VERSION" current)
-fi
+echo "Fixing /usr/aws-cli/v2/current symlink..."
+rm -rf "$AWS_V2_DIR/current"
+cd "$AWS_V2_DIR" && ln -s "$AWS_CLI_VERSION" current
 
 # Use fpm to build the RPM.
 # The -C option tells fpm to change to the staging directory and package its contents.
