@@ -86,7 +86,7 @@ jobs:
       - name: Test RPM
         if: ${{ 'skipped' != steps.build_rpm.conclusion }}
         id: test_rpm
-        run: docker compose run superbuilder ./retestit
+        run: docker compose run tester ./retestit
 
       - name: Tag for release
         if: ${{ 'skipped' != steps.test_rpm.conclusion }}

@@ -70,5 +70,5 @@ set -euo pipefail
 
 rpm --test -ivh ./${name}-${version}-${release}.${arch}.rpm
 rpm -ivh ./${name}-${version}-${release}.${arch}.rpm
-aws --version
+/usr/bin/aws --version
 EOF
