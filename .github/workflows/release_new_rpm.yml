@@ -38,7 +38,7 @@ jobs:
           echo "PKG_NAME"="awscliv2" >> $GITHUB_ENV
           echo "FINAL_INSTALL_DIR"="/usr/aws-cli" >> $GITHUB_ENV
           echo "FINAL_BIN_DIR"="/usr/bin" >> $GITHUB_ENV
-          echo "AWS_V2_DIR"="$PKG_ROOT$FINAL_INSTALL_DIR/v2" >> $GITHUB_ENV
+          echo "AWS_V2_DIR"="/tmp/pkg/usr/aws-cli/v2" >> $GITHUB_ENV
           echo "AWS_CLI_VERSION=$(cat aws-cli.version)" >> $GITHUB_ENV
 
       - name: Rebuild spec file, etc.
