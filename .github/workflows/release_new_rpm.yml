@@ -39,11 +39,11 @@ jobs:
           echo "FINAL_INSTALL_DIR"="/usr/aws-cli" >> $GITHUB_ENV
           echo "FINAL_BIN_DIR"="/usr/bin" >> $GITHUB_ENV
           echo "AWS_V2_DIR"="$PKG_ROOT$FINAL_INSTALL_DIR/v2" >> $GITHUB_ENV
+          echo "AWS_CLI_VERSION=$(cat aws-cli.version)" >> $GITHUB_ENV
 
       - name: Rebuild el8 spec file, etc.
         run: |
           ./respecit el8 # | xargs --no-run-if-empty git add
-          echo "AWS_CLI_VERSION=$(cat aws-cli.version)" >> $GITHUB_ENV
           echo "AWSCLIV2_RPM_RELEASE=$(cat awscliv2-rpm.release)" >> $GITHUB_ENV
           echo "AWSCLIV2_RPM_DISTRO=$(cat awscliv2-rpm.distro)" >> $GITHUB_ENV
           echo "BASE_IMAGE"="rockylinux:8" >> $GITHUB_ENV
