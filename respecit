@@ -41,7 +41,6 @@ set -euo pipefail
 sha256sum -c awscli-exe-linux-${arch}.zip.sha256
 
 rm -rf "$PKG_ROOT"
-rm -f "$AWS_CLI_ZIP"
 
 mkdir -p "$PKG_ROOT$FINAL_BIN_DIR"
 mkdir -p "$PKG_ROOT$FINAL_INSTALL_DIR"
