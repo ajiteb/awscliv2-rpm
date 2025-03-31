@@ -47,6 +47,7 @@ mkdir -p "$PKG_ROOT$FINAL_INSTALL_DIR"
 
 echo "Installing AWS CLI v2 into staging directory..."
 "./aws/install" --install-dir "$PKG_ROOT$FINAL_INSTALL_DIR" --bin-dir "$PKG_ROOT$FINAL_BIN_DIR" --update
+working_dir=$(pwd)
 
 echo "Fixing symlink for the aws binary..."
 rm -f "$PKG_ROOT$FINAL_BIN_DIR/aws"
@@ -58,13 +59,13 @@ echo "Fixing /usr/aws-cli/v2/current symlink..."
 rm -rf "$AWS_V2_DIR/current"
 cd "$AWS_V2_DIR" && ln -s "$AWS_CLI_VERSION" current
 
+cd "$working_dir"
+
 # Use fpm to build the RPM.
 # The -C option tells fpm to change to the staging directory and package its contents.
 echo "Building RPM package..."
 fpm -s dir -t rpm -n "$PKG_NAME" -v "$AWS_CLI_VERSION" -C "$PKG_ROOT" .
 echo "RPM package built successfully."
-# Optional: clean up the staging directory.
-rm -rf "$PKG_ROOT"
 EOF
 
 respec retestit <<EOF
