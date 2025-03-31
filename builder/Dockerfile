@@ -13,9 +13,7 @@ RUN dnf -y install \
     unzip \
     gem
 
-RUN gem install \
-    fpm
-
+RUN gem install fpm
 
 FROM base AS build_as_root_yes
 WORKDIR /root
