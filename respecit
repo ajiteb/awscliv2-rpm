@@ -15,8 +15,8 @@ HOME='$HOME'
 
 # print the file name so it can be fed to "git add"
 respec() {
-  cat >"$1"
-  echo "$1"
+    cat >"$1"
+    echo "$1"
 }
 
 respec ${name}-rpm-details.txt <<EOF
@@ -49,7 +49,6 @@ ln -s "$FINAL_INSTALL_DIR/v2/current/bin/aws" "$PKG_ROOT$FINAL_BIN_DIR/aws"
 rm -f "$PKG_ROOT$FINAL_BIN_DIR/aws_completer"
 ln -s "$FINAL_INSTALL_DIR/v2/current/bin/aws_completer" "$PKG_ROOT$FINAL_BIN_DIR/aws_completer"
 
-AWS_V2_DIR="$PKG_ROOT$FINAL_INSTALL_DIR/v2"
 if [ -L "$AWS_V2_DIR/current" ]; then
     echo "Fixing /usr/aws-cli/v2/current symlink..."
     rm -rf "$AWS_V2_DIR/current"
