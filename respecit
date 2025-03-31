@@ -15,8 +15,8 @@ HOME='$HOME'
 
 # print the file name so it can be fed to "git add"
 respec() {
-  cat >"$1"
-  echo "$1"
+    cat >"$1"
+    echo "$1"
 }
 
 respec ${name}-rpm-details.txt <<EOF
@@ -34,80 +34,41 @@ respec ${name}-rpm.distro <<EOF
 ${distro}
 EOF
 
-respec ${name}.spec <<EOF
-Summary: AWS CLI version 2
-License: Apache License 2.0
-# Group: ???
-Name: ${name}
-URL: https://docs.aws.amazon.com/cli/
-Version: ${version}
-Release: ${release}%{?dist}
-Source0: https://awscli.amazonaws.com/awscli-exe-linux-%{_arch}.zip
-Source1: awscli-exe-linux-%{_arch}.zip.sha256
-NoSource: 0
-Conflicts: awscli < 2.0
-BuildRequires: patchelf
-
-# skip debuginfo
-%define debug_package %{nil}
-%global __provides_exclude                     ^libpython
-%global __provides_exclude %__requires_exclude ^libsqlite
-
-%description
-The AWS Command Line Interface (AWS CLI) is an open
-source tool that enables you to interact with AWS
-services using commands in your command-line shell.
-
-%prep
-cp "%{S:0}" ./
-sha256sum -c "%{S:1}"
-%setup -q -n aws
-
-%build
-rpath_check=$(patchelf --print-rpath dist/libsqlite3.so)
-(test -n "$rpath_check" && patchelf --remove-rpath dist/libsqlite3.so) || true
-
-%install
-sh -x ./install --install-dir %{buildroot}/usr/libexec/${name} --bin-dir %{buildroot}/usr/bin
-# redo symlinks to avoid complaint about them containing RPM_BUILD_ROOT
-ln -sf ../libexec/${name}/v2/current/bin/aws %{buildroot}/usr/bin/aws
-ln -sf ../libexec/${name}/v2/current/bin/aws_completer %{buildroot}/usr/bin/aws_completer
-rm -f %{buildroot}/usr/libexec/${name}/v2/current
-ln -sf ${version} %{buildroot}/usr/libexec/${name}/v2/current
-
-%check
-%{buildroot}/usr/bin/aws --version
-
-%files
-/usr/bin/aws
-/usr/bin/aws_completer
-/usr/libexec/${name}
-EOF
-
 respec rebuildit <<EOF
 #!/bin/bash
 set -euo pipefail
 
 sha256sum -c awscli-exe-linux-${arch}.zip.sha256
 
-rpmlint ${name}.spec
+echo "Installing AWS CLI v2 into staging directory..."
+"./aws/install" --install-dir "$PKG_ROOT$FINAL_INSTALL_DIR" --bin-dir "$PKG_ROOT$FINAL_BIN_DIR" --update
 
-# create nosrc rpm
-rsync -ai awscli-exe-linux-${arch}.zip{,.sha256} $HOME/rpmbuild/SOURCES/
-rpmbuild -bs ${name}.spec
-rsync -ai $HOME/rpmbuild/SRPMS/ ./SRPMS/
+echo "Fixing symlink for the aws binary..."
+rm -f "$PKG_ROOT$FINAL_BIN_DIR/aws"
+ln -s "$FINAL_INSTALL_DIR/v2/current/bin/aws" "$PKG_ROOT$FINAL_BIN_DIR/aws"
+rm -f "$PKG_ROOT$FINAL_BIN_DIR/aws_completer"
+ln -s "$FINAL_INSTALL_DIR/v2/current/bin/aws_completer" "$PKG_ROOT$FINAL_BIN_DIR/aws_completer"
 
-# create binary rpm
-rpm -Uvh ./SRPMS/${name}-${version}-${release}.${distro}.nosrc.rpm
-rpmbuild -ba ~/rpmbuild/SPECS/${name}.spec
-rsync -ai $HOME/rpmbuild/RPMS/ ./RPMS/
+if [ -L "$AWS_V2_DIR/current" ]; then
+    echo "Fixing /usr/aws-cli/v2/current symlink..."
+    rm -rf "$AWS_V2_DIR/current"
+    (cd "$AWS_V2_DIR" && ln -s "$AWS_CLI_VERSION" current)
+fi
+
+# Use fpm to build the RPM.
+# The -C option tells fpm to change to the staging directory and package its contents.
+echo "Building RPM package..."
+fpm -s dir -t rpm -n "$PKG_NAME" -v "$AWS_CLI_VERSION" -C "$PKG_ROOT" .
+echo "RPM package built successfully."
+# Optional: clean up the staging directory.
+rm -rf "$PKG_ROOT"
 EOF
 
 respec retestit <<EOF
 #!/bin/bash
 set -euo pipefail
 
-rpm --test -ivh ./RPMS/${arch}/${name}-${version}-${release}.${distro}.${arch}.rpm
-rpm -ivh ./RPMS/${arch}/${name}-${version}-${release}.${distro}.${arch}.rpm
+rpm --test -ivh ./${name}-${version}-${release}.${arch}.rpm
+rpm -ivh ./${name}-${version}-${release}.${arch}.rpm
 aws --version
 EOF

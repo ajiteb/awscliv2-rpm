@@ -2,12 +2,19 @@ ARG build_as_root=no
 ARG base_image="rockylinux:8"
 
 FROM ${base_image} AS base
+
+RUN dnf module reset ruby -y
+
 RUN dnf -y install \
     rpmdevtools \
-    rpmlint
-# for copying between host and container
-RUN dnf -y install \
-    rsync
+    rpmlint \
+    rsync \
+    @ruby:3.0 \
+    unzip \
+    gem
+
+RUN gem install \
+    fpm
 
 
 FROM base AS build_as_root_yes
