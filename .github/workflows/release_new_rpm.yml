@@ -34,6 +34,10 @@ jobs:
           git rm -q -f --ignore-unmatch -- *.version
           ./check_for_new_installer
           git add *.version
+          echo "PKG_ROOT"="/tmp/pkg" >> $GITHUB_ENV
+          echo "PKG_NAME"="awscliv2" >> $GITHUB_ENV
+          echo "FINAL_INSTALL_DIR"="/usr/aws-cli" >> $GITHUB_ENV
+          echo "FINAL_BIN_DIR"="/usr/bin" >> $GITHUB_ENV
 
       - name: Rebuild el8 spec file, etc.
         run: |
@@ -42,10 +46,6 @@ jobs:
           echo "AWSCLIV2_RPM_RELEASE=$(cat awscliv2-rpm.release)" >> $GITHUB_ENV
           echo "AWSCLIV2_RPM_DISTRO=$(cat awscliv2-rpm.distro)" >> $GITHUB_ENV
           echo "BASE_IMAGE"="rockylinux:8" >> $GITHUB_ENV
-          echo "PKG_ROOT"="/tmp/pkg" >> $GITHUB_ENV
-          echo "PKG_NAME"="awscliv2" >> $GITHUB_ENV
-          echo "FINAL_INSTALL_DIR"="/usr/aws-cli" >> $GITHUB_ENV
-          echo "FINAL_BIN_DIR"="/usr/bin" >> $GITHUB_ENV
           chmod +x rebuildit
           chmod +x retestit
 
