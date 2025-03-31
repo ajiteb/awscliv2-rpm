@@ -68,7 +68,7 @@ respec retestit <<EOF
 #!/bin/bash
 set -euo pipefail
 
-rpm --test -ivh ./${name}-${version}-${release}.${distro}.${arch}.rpm
-rpm -ivh ./${name}-${version}-${release}.${distro}.${arch}.rpm
+rpm --test -ivh ./${name}-${version}-${release}.${arch}.rpm
+rpm -ivh ./${name}-${version}-${release}.${arch}.rpm
 aws --version
 EOF
