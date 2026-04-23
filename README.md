@@ -2,7 +2,7 @@
 
 Automated RPM packaging of AWS CLI v2 using GitHub Actions
 
-Note: This RPM is tested on RHEL 8 and 9, but should work on any RHEL-based distribution. The spec file is configured to install the AWS CLI in `/opt/aws-cli` and create a symlink at `/usr/local/bin/aws` for easy access.
+_Note:-_ This RPM is tested on RHEL 8 and 9, but should work on any RHEL-based distribution. The spec file is configured to install the AWS CLI in `/usr/aws-cli` and create a symlink at `/usr/bin/aws` for easy access.
 
 # Building the RPM locally
 
