@@ -2,11 +2,7 @@
 
 Automated RPM packaging of AWS CLI v2 using GitHub Actions
 
-WIP: Trying to get EL8 (RHEL, Rocky) to work
-~~Only EL7 (RHEL, Centos, ???)~~ are supported now, but other distros are in the [wishlist](goals.md).
-
-![Release new RPM](https://github.com/mcenirm/awscliv2-rpm/workflows/Release%20new%20RPM/badge.svg?branch=main&event=schedule)
-
+Note: This RPM is tested on RHEL 8 and 9, but should work on any RHEL-based distribution. The spec file is configured to install the AWS CLI in `/opt/aws-cli` and create a symlink at `/usr/local/bin/aws` for easy access.
 
 # Building the RPM locally
 
@@ -17,5 +13,6 @@ WIP: Trying to get EL8 (RHEL, Rocky) to work
 1. `docker-compose run tester ./retestit` - test installing the RPM
 
 This should result in:
-* no-source RPM: `SRPMS/awscliv2-${VERSION}-${RELEASE}.el8.nosrc.rpm`
-* installable RPM: `RPMS/x86_64/awscliv2-${VERSION}-${RELEASE}.el8.x86_64.rpm`
+
+- no-source RPM: `SRPMS/awscliv2-${VERSION}-${RELEASE}.nosrc.rpm`
+- installable RPM: `RPMS/x86_64/awscliv2-${VERSION}-${RELEASE}.x86_64.rpm`
